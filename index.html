@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sweatband — Vulcan Ops Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vd-black: #0a0a0a;
+    --vd-dark: #111111;
+    --vd-card: #161616;
+    --vd-card-border: #222222;
+    --vd-text: #e4e4e4;
+    --vd-muted: #888888;
+    --vd-accent: #f97316;
+    --vd-accent-dim: rgba(249, 115, 22, 0.15);
+    --vd-accent-glow: rgba(249, 115, 22, 0.3);
+    --vd-green: #22c55e;
+    --vd-red: #ef4444;
+    --vd-amber: #eab308;
+    --vd-blue: #3b82f6;
+    --vd-purple: #a855f7;
+    --sidebar-w: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--vd-black);
+    color: var(--vd-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--vd-dark);
+    border-right: 1px solid var(--vd-card-border);
+    padding: 1.5rem 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-logo { padding: 0 1.25rem; margin-bottom: 0.25rem; }
+  .sidebar-logo h1 { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .sidebar-logo h1 span { color: var(--vd-accent); }
+  .sidebar-logo p { font-size: 0.6rem; color: var(--vd-muted); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; margin-top: 0.15rem; }
+
+  .sidebar-section { margin-top: 1.5rem; }
+  .sidebar-section-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--vd-muted); padding: 0 1.25rem; margin-bottom: 0.4rem; }
+
+  .sidebar a {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 1.25rem;
+    color: var(--vd-muted); text-decoration: none;
+    font-size: 0.75rem; font-weight: 500;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--vd-text); background: rgba(255,255,255,0.03); border-left-color: var(--vd-accent); }
+  .sidebar a.active { color: var(--vd-text); border-left-color: var(--vd-accent); background: rgba(255,255,255,0.03); }
+  .sidebar a .ni { width: 16px; text-align: center; font-size: 0.8rem; flex-shrink: 0; }
+
+  /* ===== MAIN ===== */
+  .main { margin-left: var(--sidebar-w); padding: 2.5rem 3.5rem 5rem; max-width: 960px; }
+
+  /* ===== HERO ===== */
+  .hero { margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--vd-card-border); }
+  .hero h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 0.5rem; }
+  .hero h1 span { color: var(--vd-accent); }
+  .hero p { font-size: 0.95rem; color: var(--vd-muted); max-width: 580px; line-height: 1.7; }
+
+  .meta-row { display: flex; gap: 1.5rem; margin-top: 1.25rem; flex-wrap: wrap; }
+  .meta-item { background: var(--vd-card); border: 1px solid var(--vd-card-border); border-radius: 8px; padding: 0.75rem 1rem; min-width: 140px; }
+  .meta-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--vd-muted); margin-bottom: 0.2rem; }
+  .meta-value { font-size: 0.9rem; font-weight: 700; }
+  .meta-value a { color: var(--vd-accent); text-decoration: none; }
+  .meta-value a:hover { text-decoration: underline; }
+
+  /* ===== SECTIONS ===== */
+  .sec { margin-bottom: 4.5rem; scroll-margin-top: 2rem; padding-bottom: 3rem; border-bottom: 1px solid var(--vd-card-border); }
+  .sec:last-child { border-bottom: none; }
+  .sec-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--vd-accent); margin-bottom: 0.4rem; }
+  .sec-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+  .sec-desc { font-size: 0.85rem; color: var(--vd-muted); margin-bottom: 1.5rem; line-height: 1.7; max-width: 620px; }
+
+  /* ===== CARDS ===== */
+  .cg { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.85rem; }
+  .cg3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+  .cd {
+    background: var(--vd-card); border: 1px solid var(--vd-card-border);
+    border-radius: 10px; padding: 1.25rem; transition: border-color 0.2s;
+  }
+  .cd:hover { border-color: #333; }
+  .cd h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .cd p { font-size: 0.78rem; color: var(--vd-muted); line-height: 1.6; }
+
+  .cl { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.6rem; font-size: 0.72rem; font-weight: 600; color: var(--vd-accent); text-decoration: none; }
+  .cl:hover { opacity: 0.8; }
+
+  .badge {
+    display: inline-block; font-size: 0.58rem; font-weight: 700;
+    padding: 0.12rem 0.45rem; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.6rem;
+  }
+  .b-daily { background: rgba(34,197,94,0.15); color: var(--vd-green); }
+  .b-script { background: rgba(59,130,246,0.15); color: var(--vd-blue); }
+  .b-python { background: rgba(168,85,247,0.15); color: var(--vd-purple); }
+  .b-cron { background: rgba(234,179,8,0.15); color: var(--vd-amber); }
+  .b-shopify { background: rgba(149,201,60,0.15); color: #95c93c; }
+  .b-live { background: rgba(34,197,94,0.15); color: var(--vd-green); }
+
+  /* ===== TABLES ===== */
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  th { text-align: left; padding: 0.65rem 0.85rem; font-weight: 700; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--vd-muted); border-bottom: 2px solid var(--vd-card-border); background: var(--vd-card); }
+  td { padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--vd-card-border); color: var(--vd-muted); }
+  td:first-child { color: var(--vd-text); font-weight: 600; }
+  td a { color: var(--vd-accent); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+
+  /* ===== FLOW DIAGRAM ===== */
+  .flow { background: var(--vd-card); border: 1px solid var(--vd-card-border); border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; }
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 0.4rem; }
+  .fb { background: var(--vd-dark); border: 1px solid var(--vd-card-border); border-radius: 8px; padding: 0.65rem 1rem; text-align: center; min-width: 150px; }
+  .fb.accent { border-color: var(--vd-accent); background: var(--vd-accent-dim); }
+  .fb.green { border-color: rgba(34,197,94,0.4); }
+  .fb.blue { border-color: rgba(59,130,246,0.4); }
+  .fb.purple { border-color: rgba(168,85,247,0.4); }
+  .fb.shopify { border-color: rgba(149,201,60,0.4); }
+  .fb h4 { font-size: 0.7rem; font-weight: 700; margin-bottom: 0.1rem; }
+  .fb p { font-size: 0.6rem; color: var(--vd-muted); }
+  a.fb { transition: transform 0.15s, box-shadow 0.15s; }
+  a.fb:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .fa { color: var(--vd-muted); font-size: 1.1rem; padding: 0 0.6rem; }
+  .fad { text-align: center; color: var(--vd-muted); font-size: 1.1rem; padding: 0.2rem 0; }
+
+  /* ===== SOP STEPS ===== */
+  .steps { counter-reset: sop; }
+  .step { counter-increment: sop; display: flex; gap: 1rem; margin-bottom: 1.25rem; padding: 1.1rem; background: var(--vd-card); border: 1px solid var(--vd-card-border); border-radius: 10px; }
+  .sn { width: 32px; height: 32px; background: var(--vd-accent-dim); border: 1px solid var(--vd-accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: var(--vd-accent); flex-shrink: 0; }
+  .sn::after { content: counter(sop); }
+  .sc h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .sc p { font-size: 0.78rem; color: var(--vd-muted); line-height: 1.6; }
+  .sc a { color: var(--vd-accent); text-decoration: none; }
+  .sc a:hover { text-decoration: underline; }
+
+  /* ===== CHECKLIST ===== */
+  .chk-group { margin-bottom: 1.5rem; }
+  .chk-group h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+  .chk-group h3 .cnt { font-size: 0.6rem; font-weight: 600; color: var(--vd-muted); background: var(--vd-card); padding: 0.12rem 0.45rem; border-radius: 100px; }
+  .chk-item { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.35rem 0; font-size: 0.78rem; color: var(--vd-muted); }
+  .chk-item::before { content: ''; width: 13px; height: 13px; border: 1.5px solid var(--vd-card-border); border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+
+  /* ===== SCREENSHOT PLACEHOLDER ===== */
+  .ss { background: var(--vd-card); border: 2px dashed var(--vd-card-border); border-radius: 10px; padding: 2.5rem 1.5rem; text-align: center; margin: 1rem 0; }
+  .ss p { font-size: 0.75rem; color: var(--vd-muted); }
+  .ss .icon { font-size: 1.8rem; margin-bottom: 0.4rem; opacity: 0.4; }
+
+  /* ===== ASANA TREE ===== */
+  .tree { background: var(--vd-card); border: 1px solid var(--vd-card-border); border-radius: 10px; padding: 1.25rem; font-size: 0.78rem; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.9; }
+  .l0 { color: var(--vd-text); font-weight: 700; }
+  .l1 { padding-left: 1.5rem; color: var(--vd-accent); }
+  .l1d { padding-left: 1.5rem; color: var(--vd-muted); font-family: 'Inter', sans-serif; font-size: 0.68rem; margin-top: -0.3rem; line-height: 1.4; margin-bottom: 0.4rem; }
+
+  /* ===== ACCOUNT CONFIG ===== */
+  .config-block { background: var(--vd-card); border: 1px solid var(--vd-card-border); border-radius: 10px; padding: 1.25rem; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.72rem; line-height: 1.8; color: var(--vd-muted); margin-bottom: 1.5rem; }
+  .config-block .key { color: var(--vd-accent); }
+  .config-block .val { color: var(--vd-text); }
+
+  /* ===== DIVIDER ===== */
+  .divider { border: none; border-top: 1px solid var(--vd-card-border); margin: 3rem 0; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 1.5rem; }
+    .flow-row { flex-direction: column; }
+    .fa { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1><span>Sweatband</span></h1>
+    <p>Vulcan Ops Playbook</p>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Start Here</div>
+    <a href="#overview" style="color:var(--vd-accent); font-weight:700;"><span class="ni">&#9670;</span> Quick Links</a>
+    <a href="#daily-sop"><span class="ni">&#10003;</span> Daily Routine</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">This Week</div>
+    <a href="#weekly-sop"><span class="ni">&#128197;</span> Weekly Routine</a>
+    <a href="#call-reports"><span class="ni">&#128222;</span> Call Reports</a>
+    <a href="#client-reports"><span class="ni">&#128200;</span> Client Report</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">This Month</div>
+    <a href="#monthly-sop"><span class="ni">&#128198;</span> Monthly Routine</a>
+    <a href="#targets"><span class="ni">&#127919;</span> Targets &amp; Performance</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Account</div>
+    <a href="#campaigns"><span class="ni">&#128202;</span> Campaign Structure</a>
+    <a href="#budgets"><span class="ni">&#128176;</span> Budget Allocation</a>
+    <a href="#conversion"><span class="ni">&#128200;</span> Conversion Tracking</a>
+    <a href="#search-config"><span class="ni">&#128269;</span> Search Term Config</a>
+    <a href="#account-config"><span class="ni">&#9881;</span> Account Config</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">How It Works</div>
+    <a href="#data-flow"><span class="ni">&#8644;</span> Data Flow</a>
+    <a href="#google-scripts"><span class="ni">&#9881;</span> Monitoring Scripts</a>
+    <a href="#shopping-scripts"><span class="ni">&#128722;</span> Shopping Scripts</a>
+    <a href="#github-automation"><span class="ni">&#9654;</span> GitHub Actions</a>
+    <a href="#asana-system"><span class="ni">&#9776;</span> Asana System</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Knowledge</div>
+    <a href="#gads-library"><span class="ni">&#128218;</span> Google Ads Library</a>
+    <a href="#all-links"><span class="ni">&#128279;</span> All Links</a>
+    <a href="#context-files"><span class="ni">&#128193;</span> Context Files</a>
+    <a href="#constraints"><span class="ni">&#9888;</span> Known Constraints</a>
+  </div>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  START HERE                                                    -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- HERO: QUICK LINKS -->
+  <div class="hero" id="overview">
+    <h1><span>Sweatband</span> Playbook</h1>
+    <p>Your daily operating hub. Start at the top each morning and work down &mdash; alerts, daily checks, then this week's priorities.</p>
+
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="meta-label">Google Ads ID</div>
+        <div class="meta-value"><a href="https://ads.google.com/aw/overview?ocid=7666438476" target="_blank">766-643-8476</a></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">MCC ID</div>
+        <div class="meta-value">877-030-4780</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Shopify Store</div>
+        <div class="meta-value"><a href="https://sweatbanddevclean.myshopify.com/admin" target="_blank">sweatbanddevclean</a></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Asana Project</div>
+        <div class="meta-value"><a href="https://app.asana.com/0/1213734999759358" target="_blank">Sweatband Ops</a></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== DAILY ROUTINE ===== -->
+  <section class="sec" id="daily-sop">
+    <div class="sec-label">Start Here &mdash; Every Morning</div>
+    <div class="sec-title">Daily Routine</div>
+    <div class="sec-desc">By 8:30am, all automated tasks are in Asana. Open this page, then follow these steps in order.</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>Check Alerts First</h4>
+          <p>Open <a href="https://app.asana.com/0/1213734999759358" target="_blank">Alerts in Asana</a>. Address HIGH priority immediately. MEDIUM can wait until after daily checks.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>Review Change Log</h4>
+          <p>Scan <strong>Change Log</strong> in Asana for unexpected changes. Budget changes overnight? Campaign paused? Flag anything you didn't initiate.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>Work Through Daily Checks</h4>
+          <p>Complete the 6 tasks in <strong>Daily Checks</strong>. Mark each complete in Asana as you go.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>Check KPI Report</h4>
+          <p>Open the <a href="https://docs.google.com/spreadsheets/d/1jImDcobr45QPvZm8Vq-ftr7nwver6Yk2c6Ah_55kz5o" target="_blank">KPI Report</a>. Check Daily (Conv Time) tab &mdash; remember data &lt;18 days old is immature. Compare trends vs &pound;50 CPA target.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chk-group">
+      <h3>Daily Checklist <span class="cnt">6 tasks</span></h3>
+      <div class="chk-item">Check spend pacing vs daily budget</div>
+      <div class="chk-item">Check for spend anomalies</div>
+      <div class="chk-item">Review Google Ads account notifications</div>
+      <div class="chk-item">Check for disapproved ads/assets</div>
+      <div class="chk-item">Check Meta ad delivery</div>
+      <div class="chk-item">Check for policy violations</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  THIS WEEK                                                     -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ===== WEEKLY ROUTINE ===== -->
+  <section class="sec" id="weekly-sop">
+    <div class="sec-label">This Week</div>
+    <div class="sec-title">Weekly Routine</div>
+    <div class="sec-desc">Generated every Monday. Core optimisation tasks &mdash; complete by Friday.</div>
+
+    <div class="chk-group">
+      <h3>Weekly Checklist <span class="cnt">19 tasks</span></h3>
+      <div class="chk-item">Search term audit &mdash; add negatives for wasted spend</div>
+      <div class="chk-item">Search term audit &mdash; identify new keyword opportunities</div>
+      <div class="chk-item">Review Quality Scores (below 5 = action needed)</div>
+      <div class="chk-item">Check impression share &mdash; identify budget/rank losses</div>
+      <div class="chk-item">Review tROAS/tCPA vs actual performance</div>
+      <div class="chk-item">Campaign cannibalisation check</div>
+      <div class="chk-item">Budget allocation review across campaigns</div>
+      <div class="chk-item">Bid adjustment review (device, location, schedule)</div>
+      <div class="chk-item">RSA asset performance review</div>
+      <div class="chk-item">Shopping feed: check disapprovals &amp; warnings</div>
+      <div class="chk-item">Shopping feed: review title &amp; description quality</div>
+      <div class="chk-item">PMax: check asset group performance</div>
+      <div class="chk-item">PMax: review search themes &amp; categories</div>
+      <div class="chk-item">Competitor activity check (Auction Insights)</div>
+      <div class="chk-item">Review top performers &mdash; scale opportunities</div>
+      <div class="chk-item">Review worst performers &mdash; pause or restructure</div>
+      <div class="chk-item">Prepare weekly client update</div>
+      <div class="chk-item">Send weekly client update</div>
+      <div class="chk-item">Document any strategic changes made this week</div>
+    </div>
+  </section>
+
+  <!-- ===== CALL REPORTS ===== -->
+  <section class="sec" id="call-reports">
+    <div class="sec-label">This Week</div>
+    <div class="sec-title">Call Reports</div>
+    <div class="sec-desc">Client call summaries with Fathom recordings, key decisions, and action items. Most recent first.</div>
+
+    <!-- CALL: March 30 -->
+    <div class="cd" style="margin-bottom: 1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+        <div>
+          <h3 style="margin-bottom:0.1rem;">Vulcan Digital Weekly Call</h3>
+          <p style="font-size:0.7rem; color:var(--vd-muted);">March 30, 2026 &middot; 22 min &middot; David, Jack, Nav, Andy</p>
+        </div>
+        <a class="cl" href="https://fathom.video/share/WYk7Eo4htaoLZjV_LUZFyE7rxe8pstyE" target="_blank" style="margin:0; white-space:nowrap;">Watch Recording &#8599;</a>
+      </div>
+
+      <p style="font-size:0.72rem; font-weight:600; color:var(--vd-text); margin-bottom:0.4rem;">Key Decisions</p>
+      <div style="font-size:0.75rem; color:var(--vd-muted); line-height:1.8; margin-bottom:0.75rem;">
+        &bull; Post-Easter (Apr 8), transition to Spring Sale &mdash; similar product mix, spring-themed<br>
+        &bull; Tom launching strength category as third priority behind spring sale<br>
+        &bull; Focus on 50-60 core products with tighter targeting via Data Feed Watch<br>
+        &bull; Promo products outperformed non-promo over weekend &mdash; continue pushing Easter 10<br>
+        &bull; Treadmills remain #1 priority regardless of season (confirmed by Apr 2025 data)<br>
+        &bull; TikTok only worth it for low-AOV rackets IF UGC content exists
+      </div>
+
+      <p style="font-size:0.72rem; font-weight:600; color:var(--vd-text); margin-bottom:0.4rem;">Issues Flagged</p>
+      <div style="font-size:0.75rem; color:var(--vd-muted); line-height:1.8; margin-bottom:0.75rem;">
+        &bull; <span style="color:var(--vd-red); font-weight:600;">IRON pricing:</span> double discount in Shopping (compare &pound;699 &rarr; sale &pound;499 &rarr; Easter 10% = &pound;404) <a href="https://fathom.video/share/WYk7Eo4htaoLZjV_LUZFyE7rxe8pstyE?timestamp=785.9999" target="_blank" style="color:var(--vd-accent); text-decoration:none; font-size:0.65rem;">[clip]</a><br>
+        &bull; <span style="color:var(--vd-amber); font-weight:600;">Tennis balls:</span> same barcode/GTIN causing variant aggregation in GMC <a href="https://fathom.video/share/WYk7Eo4htaoLZjV_LUZFyE7rxe8pstyE?timestamp=856.9999" target="_blank" style="color:var(--vd-accent); text-decoration:none; font-size:0.65rem;">[clip]</a><br>
+        &bull; <span style="color:var(--vd-amber); font-weight:600;">Wrong image:</span> treadmill ad showing rowing image in extensions <a href="https://fathom.video/share/WYk7Eo4htaoLZjV_LUZFyE7rxe8pstyE?timestamp=976.9999" target="_blank" style="color:var(--vd-accent); text-decoration:none; font-size:0.65rem;">[clip]</a><br>
+        &bull; IRON stock went to zero &rarr; dropped out of Easter collection &rarr; manually restocked
+      </div>
+
+      <p style="font-size:0.72rem; font-weight:600; color:var(--vd-text); margin-bottom:0.4rem;">Action Items</p>
+      <div style="font-size:0.75rem; color:var(--vd-muted); line-height:1.8;">
+        <div class="chk-item">Send updated product sheet w/ removed-products tab to Andy</div>
+        <div class="chk-item">Email Data Feed Watch re: IRON pricing/stock issue</div>
+        <div class="chk-item">Investigate tennis ball variant aggregation &mdash; propose fix to Andy</div>
+        <div class="chk-item">Email Andy screenshot of treadmill ad w/ rowing image</div>
+        <div class="chk-item">Review new KPI sheet with Jack, send to Nav</div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER: Previous calls -->
+    <div class="cd" style="opacity:0.5; text-align:center; padding:2rem;">
+      <p style="font-size:0.75rem;">Previous call reports will appear here as they&rsquo;re logged</p>
+    </div>
+  </section>
+
+  <!-- ===== CLIENT REPORT ===== -->
+  <section class="sec" id="client-reports">
+    <div class="sec-label">This Week</div>
+    <div class="sec-title">Weekly Client Report</div>
+    <div class="sec-desc">Sent to the client every Friday via Slack. Auto-generated from KPI data, with space for commentary. This is what the client sees each week.</div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-bottom:0.75rem;">Slack Message Template</h3>
+    <div class="config-block" style="line-height:2; font-size:0.72rem;">
+      <span style="color:var(--vd-accent); font-weight:700;">Sweatband &mdash; Weekly Report (w/e 28 Mar 2026)</span><br>
+      <br>
+      <span style="color:var(--vd-text); font-weight:600;">&#128200; Performance (lag-adjusted, 18-day window)</span><br>
+      <span class="key">Spend:</span> <span class="val">&pound;60,011</span><br>
+      <span class="key">ROAS:</span> <span class="val">6.1x</span><br>
+      <span class="key">Revenue:</span> <span class="val">&pound;364,843</span><br>
+      <span class="key">Conversions:</span> <span class="val">1,081</span><br>
+      <span class="key">AOV:</span> <span class="val">&pound;337</span><br>
+      <span class="key">CPA:</span> <span class="val">&pound;55.51 (vs &pound;50 target)</span><br>
+      <br>
+      <span style="color:var(--vd-text); font-weight:600;">&#128640; Top Campaigns</span><br>
+      <span class="val">1. VD | Shopping | Catch-all &mdash; &pound;8,263, 8.0x ROAS, 429 convs</span><br>
+      <span class="val">2. Top Picks - PMax &mdash; &pound;9,658, 7.0x ROAS, 142 convs</span><br>
+      <span class="val">3. Cardio Machines - PMax &mdash; &pound;16,366, 5.6x ROAS, 159 convs</span><br>
+      <br>
+      <span style="color:var(--vd-text); font-weight:600;">&#128293; Top Products</span><br>
+      <span class="val">1. Reebok GT40z Treadmill &mdash; &pound;39,083 revenue, 62 orders</span><br>
+      <span class="val">2. Reebok i-RUN 5.0 Folding Treadmill &mdash; &pound;19,940, 31 orders</span><br>
+      <span class="val">3. Xterra ERG780 Air Rowing Machine &mdash; &pound;18,382, 35 orders</span><br>
+      <br>
+      <span style="color:var(--vd-green); font-weight:600;">&#9989; Wins This Week</span><br>
+      <span class="val">&bull; [e.g. Easter 10 promo driving strong conversion on cardio]</span><br>
+      <span class="val">&bull; [e.g. Feed quality improved &mdash; fewer disapprovals]</span><br>
+      <br>
+      <span style="color:var(--vd-amber); font-weight:600;">&#9888;&#65039; Flagged / In Progress</span><br>
+      <span class="val">&bull; [e.g. IRON pricing double-discount &mdash; working with DFW]</span><br>
+      <span class="val">&bull; [e.g. Tennis ball variant aggregation &mdash; investigating]</span><br>
+      <br>
+      <span style="color:var(--vd-text); font-weight:600;">&#128197; Next Week</span><br>
+      <span class="val">&bull; [e.g. Prep Spring Sale transition for Apr 8]</span><br>
+      <span class="val">&bull; [e.g. Product mix shift &mdash; tighter targeting on 50-60 core SKUs]</span>
+    </div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem;">How It Works</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>Data Pull</h4>
+          <p>Script pulls lag-adjusted KPIs from the <a href="https://docs.google.com/spreadsheets/d/1jImDcobr45QPvZm8Vq-ftr7nwver6Yk2c6Ah_55kz5o" target="_blank">KPI Report</a> (conv-time data, excluding immature days within 18-day lag window). Top campaigns from Campaign Daily tab. Top products from Product Matrix tab.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>Commentary</h4>
+          <p>Wins, flags, and next-week items are added manually (or pulled from the Call Report + Asana action items from that week).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>Send via Slack</h4>
+          <p>Formatted message posted to the client Slack channel. Sent Friday EOD (aligns with the &ldquo;Send weekly client update&rdquo; task in Asana).</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.75rem;">Report History</h3>
+    <table>
+      <thead><tr><th>Week Ending</th><th>Spend</th><th>ROAS</th><th>Revenue</th><th>Convs</th><th>AOV</th><th>Sent?</th></tr></thead>
+      <tbody>
+        <tr><td>28 Mar 2026</td><td>&pound;60,011</td><td>6.1x</td><td>&pound;364,843</td><td>1,081</td><td>&pound;337</td><td style="color:var(--vd-green);">&#9989;</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  THIS MONTH                                                    -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ===== MONTHLY ROUTINE ===== -->
+  <section class="sec" id="monthly-sop">
+    <div class="sec-label">This Month</div>
+    <div class="sec-title">Monthly Routine</div>
+    <div class="sec-desc">Generated on the 1st. Deep dives and strategic reviews &mdash; complete before month-end.</div>
+
+    <div class="chk-group">
+      <h3>Monthly Checklist <span class="cnt">22 tasks</span></h3>
+      <div class="chk-item">Performance review vs KPI targets (&pound;50 CPA, 200 convs)</div>
+      <div class="chk-item">Month-over-month comparison analysis</div>
+      <div class="chk-item">Year-over-year comparison</div>
+      <div class="chk-item">Campaign structure audit</div>
+      <div class="chk-item">Keyword expansion review</div>
+      <div class="chk-item">Audience review &amp; optimisation</div>
+      <div class="chk-item">Landing page URL verification</div>
+      <div class="chk-item">Creative fatigue audit</div>
+      <div class="chk-item">Full conversion tracking verification</div>
+      <div class="chk-item">GA4 cross-check &mdash; Ads vs Analytics discrepancy</div>
+      <div class="chk-item">Attribution model review</div>
+      <div class="chk-item">Device performance deep dive</div>
+      <div class="chk-item">Geographic performance analysis</div>
+      <div class="chk-item">Hour of day / day of week analysis</div>
+      <div class="chk-item">Shopping feed health audit</div>
+      <div class="chk-item">Competitor pricing review</div>
+      <div class="chk-item">Budget recommendations for next month</div>
+      <div class="chk-item">Prepare monthly client report</div>
+      <div class="chk-item">Monthly client call / QBR</div>
+      <div class="chk-item">Update business.md context</div>
+      <div class="chk-item">Review &amp; update account strategy</div>
+      <div class="chk-item">Client satisfaction pulse check</div>
+    </div>
+  </section>
+
+  <!-- ===== TARGETS & PERFORMANCE ===== -->
+  <section class="sec" id="targets">
+    <div class="sec-label">This Month</div>
+    <div class="sec-title">Targets &amp; Performance</div>
+    <div class="sec-desc">Updated from client calls and weekly reviews. See <a href="https://docs.google.com/spreadsheets/d/1jImDcobr45QPvZm8Vq-ftr7nwver6Yk2c6Ah_55kz5o" target="_blank" style="color:var(--vd-accent);">KPI Report</a> for live data.</div>
+
+    <table>
+      <thead><tr><th>Metric</th><th>Target</th><th>Current (30d)</th><th>Gap</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>ROAS (blended)</td><td>4.5x</td><td style="color:var(--vd-green);">6.1x</td><td style="color:var(--vd-green);">+36%</td><td style="color:var(--vd-green);">Above target</td></tr>
+        <tr><td>CPA (blended)</td><td>&pound;50</td><td style="color:var(--vd-red);">&pound;62</td><td style="color:var(--vd-red);">-19%</td><td style="color:var(--vd-amber);">Above target</td></tr>
+        <tr><td>Monthly Spend</td><td>&pound;65k</td><td>&pound;56,282</td><td>&mdash;</td><td style="color:var(--vd-amber);">Underspending</td></tr>
+        <tr><td>Monthly Conversions</td><td>200</td><td>901</td><td style="color:var(--vd-green);">+351%</td><td style="color:var(--vd-green);">Well above</td></tr>
+        <tr><td>AOV</td><td>&mdash;</td><td>&pound;383</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>CTR</td><td>&mdash;</td><td>0.87%</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>Avg CPC</td><td>&mdash;</td><td>&pound;1.25</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:0.65rem; color:var(--vd-muted); margin-top:0.5rem;">Blended = all active campaigns &middot; 30-day window &middot; Last pulled: 11 Mar 2026</p>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem;">Performance by Device</h3>
+    <table>
+      <thead><tr><th>Device</th><th>Clicks</th><th>Conversions</th><th>Revenue</th><th>Spend</th><th>ROAS</th><th>CPA</th></tr></thead>
+      <tbody>
+        <tr><td>Mobile</td><td>35,197</td><td>637</td><td>&pound;234,253</td><td>&pound;40,861</td><td style="color:var(--vd-green);">5.7x</td><td>&pound;64</td></tr>
+        <tr><td>Desktop</td><td>7,473</td><td>246</td><td>&pound;103,185</td><td>&pound;14,236</td><td style="color:var(--vd-green);">7.2x</td><td>&pound;58</td></tr>
+        <tr><td>Tablet</td><td>921</td><td>16</td><td>&pound;5,173</td><td>&pound;1,177</td><td style="color:var(--vd-amber);">4.4x</td><td>&pound;74</td></tr>
+      </tbody>
+    </table>
+    <div class="config-block" style="margin-top:0.75rem;">
+      <span class="key">Insight:</span> <span class="val">Desktop has best ROAS (7.2x) and lowest CPA (&pound;58) despite only 20% of clicks. Mobile drives 73% of volume. Tablet is marginal &mdash; close to max CPA constraint.</span>
+    </div>
+
+    <div class="config-block" style="margin-top:1rem;">
+      <span class="key">Primary KPI:</span> <span class="val">CPA (Balanced mode)</span><br>
+      <span class="key">Mode:</span> <span class="val">Balanced &mdash; hit targets, grow where possible</span><br>
+      <span class="key">Hard constraint:</span> <span class="val" style="color:var(--vd-red);">Max CPA &pound;75 &middot; Min conversions 100/mo</span><br>
+      <span class="key">Conversion lag:</span> <span class="val" style="color:var(--vd-amber);">18 days &mdash; never judge data younger than this</span><br>
+      <span class="key">Note:</span> <span class="val">ROAS is strong but CPA is 19% above &pound;50 target. High-CPA campaigns (Priorities at &pound;137, Prospecting at &pound;329) are dragging the blended number up. Catch-all (&pound;19 CPA) and Top Picks (&pound;68 CPA) are the efficient engines.</span>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  ACCOUNT                                                       -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ===== CAMPAIGN STRUCTURE ===== -->
+  <section class="sec" id="campaigns">
+    <div class="sec-label">Account</div>
+    <div class="sec-title">Campaign Structure</div>
+    <div class="sec-desc">Live campaigns from the Sweatband account. Update when campaigns are added, paused, or restructured.</div>
+
+    <table>
+      <thead><tr><th>Campaign</th><th>Type</th><th>Bidding</th><th>Target</th><th>30d Spend</th><th>30d ROAS</th><th>30d CPA</th><th>Imp Share</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>VD | Priorities</td><td>Shopping</td><td>tROAS</td><td>2.7x</td><td>&pound;20,140</td><td style="color:var(--vd-green);">5.4x</td><td>&pound;137</td><td>60%</td><td style="color:var(--vd-green);">Active</td></tr>
+        <tr><td>Cardio Machines - PMax</td><td>PMax</td><td>Max Conv Value</td><td>tROAS 5.6x</td><td>&pound;16,366</td><td style="color:var(--vd-green);">5.6x</td><td>&pound;103</td><td>50%</td><td style="color:var(--vd-green);">Active</td></tr>
+        <tr><td>Top Picks - P Max</td><td>PMax</td><td>Max Conv Value</td><td>tROAS 6.2x</td><td>&pound;9,658</td><td style="color:var(--vd-green);">7.0x</td><td>&pound;68</td><td>25%</td><td style="color:var(--vd-green);">Active</td></tr>
+        <tr><td>VD | Shopping | Catch-all</td><td>Shopping</td><td>tROAS</td><td>8.0x</td><td>&pound;8,263</td><td style="color:var(--vd-green);">8.0x</td><td style="color:var(--vd-green);">&pound;19</td><td>56%</td><td style="color:var(--vd-green);">Active</td></tr>
+        <tr><td>VD | Prospecting Search</td><td>Search</td><td>Max Conv Value</td><td>tROAS 6.0x</td><td>&pound;1,805</td><td style="color:var(--vd-amber);">3.0x</td><td style="color:var(--vd-red);">&pound;329</td><td style="color:var(--vd-red);">10%</td><td style="color:var(--vd-green);">Active</td></tr>
+        <tr><td>VD | Branded Search</td><td>Search</td><td>Manual CPC</td><td>&mdash;</td><td>&pound;50</td><td style="color:var(--vd-green);">133x</td><td style="color:var(--vd-green);">&pound;2.75</td><td style="color:var(--vd-red);">13%</td><td style="color:var(--vd-green);">Active</td></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:0.65rem; color:var(--vd-muted); margin-top:0.5rem;">Data from Google Ads API &middot; 30-day window &middot; Last pulled: 11 Mar 2026</p>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem;">Paused Campaigns</h3>
+    <table>
+      <thead><tr><th>Campaign</th><th>Type</th><th>30d Spend</th><th>30d ROAS</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--vd-muted);">Racket Sports - PMax</td><td>PMax</td><td>&pound;2,512</td><td>5.2x</td><td style="color:var(--vd-amber);">Paused</td></tr>
+        <tr><td style="color:var(--vd-muted);">VD | Strength | PMax</td><td>PMax</td><td>&pound;829</td><td>6.3x</td><td style="color:var(--vd-amber);">Paused</td></tr>
+        <tr><td style="color:var(--vd-muted);">Catch-all - PMax</td><td>PMax</td><td>&pound;388</td><td>5.9x</td><td style="color:var(--vd-amber);">Paused</td></tr>
+      </tbody>
+    </table>
+
+    <div class="config-block" style="margin-top:1rem;">
+      <span class="key">Note:</span> <span class="val">VD | Branded Search is excluded from search term analysis</span><br>
+      <span class="key">Campaign names must match exactly</span> <span class="val">for automations (search term analyser, KPI report) to work</span><br>
+      <span class="key">Top performer:</span> <span class="val">VD | Shopping | Catch-all &mdash; 429 convs at &pound;19 CPA, 8.0x ROAS</span><br>
+      <span class="key">Watch:</span> <span class="val" style="color:var(--vd-amber);">VD | Prospecting Search &mdash; &pound;329 CPA, only 10% impression share. Low volume, high cost.</span>
+    </div>
+  </section>
+
+  <!-- ===== BUDGET ALLOCATION ===== -->
+  <section class="sec" id="budgets">
+    <div class="sec-label">Account</div>
+    <div class="sec-title">Budget Allocation</div>
+    <div class="sec-desc">Update monthly or when budget changes. Confirm with client before reallocating.</div>
+
+    <table>
+      <thead><tr><th>Campaign</th><th>Daily Budget</th><th>Monthly (est.)</th><th>30d Actual</th><th>Pacing</th><th>Scale Rule</th></tr></thead>
+      <tbody>
+        <tr><td>VD | Priorities</td><td>&pound;1,100</td><td>&pound;33,000</td><td>&pound;20,140</td><td style="color:var(--vd-amber);">61%</td><td>tROAS target 2.7x &mdash; scale if ROAS holds</td></tr>
+        <tr><td>Cardio Machines - PMax</td><td>&pound;500</td><td>&pound;15,000</td><td>&pound;16,366</td><td style="color:var(--vd-green);">109%</td><td>tROAS 5.6x &mdash; hitting target, scale-ready</td></tr>
+        <tr><td>Top Picks - P Max</td><td>&pound;500</td><td>&pound;15,000</td><td>&pound;9,658</td><td style="color:var(--vd-amber);">64%</td><td>tROAS 6.2x &mdash; underspending, strong ROAS</td></tr>
+        <tr><td>VD | Shopping | Catch-all</td><td>&pound;320</td><td>&pound;9,600</td><td>&pound;8,263</td><td style="color:var(--vd-green);">86%</td><td>tROAS 8.0x &mdash; highest efficiency campaign</td></tr>
+        <tr><td>VD | Prospecting Search</td><td>&pound;30</td><td>&pound;900</td><td>&pound;1,805</td><td style="color:var(--vd-red);">200%</td><td>tROAS 6.0x &mdash; overspending, CPA &pound;329</td></tr>
+        <tr><td>VD | Branded Search</td><td>&pound;15</td><td>&pound;450</td><td>&pound;50</td><td style="color:var(--vd-green);">11%</td><td>Manual CPC &mdash; brand protection, low spend</td></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:0.65rem; color:var(--vd-muted); margin-top:0.5rem;">Budget = Google Ads daily budget setting &middot; Actual = 30-day spend from API &middot; Last pulled: 11 Mar 2026</p>
+
+    <div class="config-block" style="margin-top:1rem;">
+      <span class="key">Total daily budget (active):</span> <span class="val">&pound;2,465/day (&pound;73,950/mo theoretical max)</span><br>
+      <span class="key">Total 30d actual spend:</span> <span class="val">&pound;56,282</span><br>
+      <span class="key">Reallocation authority:</span> <span class="val">Move up to 20% between campaigns without client approval</span><br>
+      <span class="key">Pause trigger:</span> <span class="val" style="color:var(--vd-red);">Any campaign CPA &gt; 2x target for 7+ days</span>
+    </div>
+  </section>
+
+  <!-- ===== CONVERSION TRACKING ===== -->
+  <section class="sec" id="conversion">
+    <div class="sec-label">Account</div>
+    <div class="sec-title">Conversion Tracking</div>
+    <div class="sec-desc">Update if conversion actions change or values are updated. This is an ecommerce account &mdash; primary conversion is Purchase.</div>
+
+    <table>
+      <thead><tr><th>Action</th><th>Type</th><th>Value</th><th>Counting</th><th>Primary?</th></tr></thead>
+      <tbody>
+        <tr><td>Purchase</td><td>Sale</td><td>Dynamic (order value)</td><td>Every</td><td style="color:var(--vd-green);">Yes</td></tr>
+        <tr><td colspan="5" style="color:var(--vd-muted); font-style:italic;">Add other conversion actions here as they're set up</td></tr>
+      </tbody>
+    </table>
+
+    <div class="config-block" style="margin-top:1rem;">
+      <span class="key">Attribution model:</span> <span class="val">Data-driven</span><br>
+      <span class="key">Conversion window:</span> <span class="val">30 days</span><br>
+      <span class="key">Conversion lag:</span> <span class="val" style="color:var(--vd-amber);">18 days (critical &mdash; don't judge data younger than this)</span><br>
+      <span class="key">Average order value (AOV):</span> <span class="val">&pound;383 (30-day blended from Google Ads)</span><br>
+      <span class="key">Customer LTV:</span> <span class="val">&pound;7,500</span>
+    </div>
+  </section>
+
+  <!-- ===== SEARCH TERM CONFIG ===== -->
+  <section class="sec" id="search-config">
+    <div class="sec-label">Account</div>
+    <div class="sec-title">Search Term &amp; Automation Config</div>
+    <div class="sec-desc">Settings that power the automated search term analyser and n-gram analysis. These live in <code>config/ads-context.config.json</code>.</div>
+
+    <div class="config-block">
+      <span class="key">Search term conv lag for exclusions:</span> <span class="val">8 days</span><br>
+      <span class="key">Inefficient CPA multiplier:</span> <span class="val">1.5x</span><br>
+      <span class="key">Min spend to flag:</span> <span class="val">&pound;5</span><br>
+      <span class="key">Min spend for inefficient:</span> <span class="val">&pound;50</span><br>
+      <span class="key">Min clicks for inefficient:</span> <span class="val">3</span><br>
+      <span class="key">Negative match type:</span> <span class="val">Broad</span><br>
+      <span class="key">Branded campaign (excluded):</span> <span class="val">VD | Branded Search</span>
+    </div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.25rem; margin-bottom:0.5rem;">N-Gram Analysis Settings</h3>
+    <div class="config-block">
+      <span class="key">Min impressions:</span> <span class="val">50</span><br>
+      <span class="key">Min clicks:</span> <span class="val">5</span><br>
+      <span class="key">Min distinct terms:</span> <span class="val">2</span><br>
+      <span class="key">Default AOV:</span> <span class="val">&pound;200</span><br>
+      <span class="key">Non-converting spend multiplier:</span> <span class="val">2.0x</span><br>
+      <span class="key">Inefficient CPA multiplier:</span> <span class="val">1.75x</span>
+    </div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.25rem; margin-bottom:0.5rem;">Shared Negative Lists</h3>
+    <div class="config-block">
+      <span class="key">Primary:</span> <span class="val">Search Term Exclusions</span><br>
+      <span class="key">N-gram non-converting:</span> <span class="val">Non-Converting N-grams</span><br>
+      <span class="key">N-gram inefficient:</span> <span class="val">Inefficient N-grams</span>
+    </div>
+  </section>
+
+  <!-- ===== ACCOUNT CONFIG ===== -->
+  <section class="sec" id="account-config">
+    <div class="sec-label">Account</div>
+    <div class="sec-title">Account Configuration</div>
+    <div class="sec-desc">Key identifiers and settings that all scripts and automations reference.</div>
+
+    <div class="config-block">
+      <span class="key">Customer ID:</span> <span class="val">7666438476</span><br>
+      <span class="key">Login Customer ID:</span> <span class="val">8770304780</span><br>
+      <span class="key">Shopify Store:</span> <span class="val">sweatbanddevclean.myshopify.com</span><br>
+      <span class="key">Primary KPI:</span> <span class="val">CPA (Balanced mode)</span><br>
+      <span class="key">Conversion Action:</span> <span class="val">purchase</span><br>
+      <span class="key">Conversion Lag:</span> <span class="val">18 days</span><br>
+      <span class="key">Attribution Model:</span> <span class="val">Data-driven</span><br>
+      <span class="key">Conversion Window:</span> <span class="val">30 days</span><br>
+      <span class="key">Asana Project:</span> <span class="val">1213734999759358</span><br>
+      <span class="key">Alert Sheet:</span> <span class="val">1Y01XZ_YG7IHSdNDV-nB10OM5mfhdkWkxDGBNoiXgg20</span><br>
+      <span class="key">Data Pull Sheet:</span> <span class="val">1Honeneyh09gu_G20kDkDyogWk16QmOq4JQTLOXzceaI</span><br>
+      <span class="key">KPI Report Sheet:</span> <span class="val">1jImDcobr45QPvZm8Vq-ftr7nwver6Yk2c6Ah_55kz5o</span>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  HOW IT WORKS                                                  -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ===== DATA FLOW ===== -->
+  <section class="sec" id="data-flow">
+    <div class="sec-label">How It Works</div>
+    <div class="sec-title">Sweatband Data Flow</div>
+    <div class="sec-desc">Click any box below to open the resource it represents &mdash; external links open in a new tab, internal sections scroll into view.</div>
+
+    <div class="flow">
+      <div class="flow-row">
+        <a href="https://ads.google.com/aw/overview?ocid=7666438476" target="_blank" class="fb accent" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>Google Ads</h4>
+          <p>766-643-8476</p>
+        </a>
+        <div class="fa">+</div>
+        <a href="https://sweatbanddevclean.myshopify.com/admin" target="_blank" class="fb shopify" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>Shopify</h4>
+          <p>sweatbanddevclean</p>
+        </a>
+      </div>
+      <div class="fad">&#9660;</div>
+      <div class="flow-row">
+        <a href="#google-scripts" class="fb blue" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>6 Monitoring Scripts</h4>
+          <p>Daily 6am</p>
+        </a>
+        <div class="fa">+</div>
+        <a href="https://docs.google.com/spreadsheets/d/1jImDcobr45QPvZm8Vq-ftr7nwver6Yk2c6Ah_55kz5o" target="_blank" class="fb blue" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>KPI Report Script</h4>
+          <p>18 tabs &middot; Daily</p>
+        </a>
+      </div>
+      <div class="fad">&#9660;</div>
+      <div class="flow-row">
+        <a href="https://docs.google.com/spreadsheets/d/1Y01XZ_YG7IHSdNDV-nB10OM5mfhdkWkxDGBNoiXgg20" target="_blank" class="fb green" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>Google Sheets</h4>
+          <p>Alert Hub + Data Pull + KPI Report</p>
+        </a>
+      </div>
+      <div class="fad">&#9660;</div>
+      <div class="flow-row">
+        <a href="#github-automation" class="fb purple" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>GitHub Actions</h4>
+          <p>8am UTC &middot; 3-step pipeline</p>
+        </a>
+        <div class="fa">&#9654;</div>
+        <a href="https://app.asana.com/0/1213734999759358" target="_blank" class="fb green" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>Asana</h4>
+          <p>Alerts + Checklists + Changelog</p>
+        </a>
+        <div class="fa">&#9654;</div>
+        <a href="http://localhost:3000" target="_blank" class="fb accent" style="text-decoration:none; color:inherit; cursor:pointer;">
+          <h4>Dashboard</h4>
+          <p>Real-time ops view</p>
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== MONITORING SCRIPTS ===== -->
+  <section class="sec" id="google-scripts">
+    <div class="sec-label">How It Works</div>
+    <div class="sec-title">Google Ads Monitoring Scripts</div>
+    <div class="sec-desc">6 scripts run daily at 6am inside the Sweatband Google Ads account. They write to the Alert Hub and Data Pull sheets.</div>
+
+    <div class="cg cg3">
+      <div class="cd">
+        <h3>Daily Data Pull</h3>
+        <p>7d and 14d rolling data: campaigns, ad groups, keywords, search terms, products.</p>
+        <span class="badge b-daily">Daily 6am</span><br>
+        <a class="cl" href="https://docs.google.com/spreadsheets/d/1Honeneyh09gu_G20kDkDyogWk16QmOq4JQTLOXzceaI" target="_blank">Data Pull Sheet &#8599;</a>
+      </div>
+      <div class="cd">
+        <h3>Bid Strategy Monitor</h3>
+        <p>Flags Learning, Limited, or Misconfigured bid strategies. Calculates ROAS/CPA gap.</p>
+        <span class="badge b-daily">Daily 6am</span>
+      </div>
+      <div class="cd">
+        <h3>Budget Pacing Monitor</h3>
+        <p>Spend vs daily budget. Flags over/underspend campaigns.</p>
+        <span class="badge b-daily">Daily 6am</span>
+      </div>
+      <div class="cd">
+        <h3>Conversion Health</h3>
+        <p>Validates conversion actions are firing. Catches tracking drops and tag issues.</p>
+        <span class="badge b-daily">Daily 6am</span>
+      </div>
+      <div class="cd">
+        <h3>Disapproval Scanner</h3>
+        <p>Finds disapproved ads, assets, extensions. Catches policy violations early.</p>
+        <span class="badge b-daily">Daily 6am</span>
+      </div>
+      <div class="cd">
+        <h3>Spend Anomaly Monitor</h3>
+        <p>Detects sudden spend spikes or drops vs rolling baseline.</p>
+        <span class="badge b-daily">Daily 6am</span>
+      </div>
+    </div>
+
+    <a class="cl" href="https://docs.google.com/spreadsheets/d/1Y01XZ_YG7IHSdNDV-nB10OM5mfhdkWkxDGBNoiXgg20" target="_blank" style="margin-top: 0.75rem; display:inline-flex;">All alerts write to Alert Hub Sheet &#8599;</a>
+  </section>
+
+
+  <!-- ===== SHOPPING SCRIPTS ===== -->
+  <section class="sec" id="shopping-scripts">
+    <div class="sec-label">How It Works</div>
+    <div class="sec-title">Shopping &amp; Price Monitoring</div>
+    <div class="sec-desc">Sweatband-specific scripts deployed in Google Ads for Shopping campaign health and price monitoring.</div>
+
+    <div class="cg">
+      <div class="cd">
+        <h3>Price Mismatch Monitor</h3>
+        <p>Compares Google Merchant Center feed prices to actual Shopify website prices. Catches mismatches before they cause disapprovals or misleading ads.</p>
+        <span class="badge b-shopify">Shopify + GMC</span>
+      </div>
+      <div class="cd">
+        <h3>Competitor Price Checker</h3>
+        <p>Monitors competitor pricing for key products. Alerts when competitors drop prices significantly.</p>
+        <span class="badge b-script">Google Ads Script</span>
+      </div>
+      <div class="cd">
+        <h3>Shopping Campaign Analyser</h3>
+        <p>Deep Shopping campaign analysis. Product-level performance, feed quality, brand vs non-brand segmentation.</p>
+        <span class="badge b-script">Google Ads Script</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GITHUB ACTIONS ===== -->
+  <section class="sec" id="github-automation">
+    <div class="sec-label">How It Works</div>
+    <div class="sec-title">GitHub Actions Pipeline</div>
+    <div class="sec-desc">Three Python scripts run at 8am UTC daily. They sync Google Ads data into Asana automatically.</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>sync_changelog.py</h4>
+          <p>Queries Google Ads API for all Sweatband account changes in the past 24 hours. Creates tasks in the <strong>Change Log</strong> Asana section. High-priority changes fire a Slack notification.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>sync_alerts_to_asana.py</h4>
+          <p>Reads unprocessed rows from the <a href="https://docs.google.com/spreadsheets/d/1Y01XZ_YG7IHSdNDV-nB10OM5mfhdkWkxDGBNoiXgg20" target="_blank">Alert Hub sheet</a>. Maps severity &rarr; Asana priority. Creates tasks in <strong>Alerts</strong> section.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn"></div>
+        <div class="sc">
+          <h4>generate_recurring_tasks.py</h4>
+          <p>Creates daily (6), weekly (19), and monthly (22) checklist tasks in Asana. Deduplicates against existing incomplete tasks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ASANA SYSTEM ===== -->
+  <section class="sec" id="asana-system">
+    <div class="sec-label">How It Works</div>
+    <div class="sec-title">Asana System Guide</div>
+    <div class="sec-desc">Every client gets the same structure, automated alerts, and recurring checklists. Full guide: <a href="https://www.notion.so/32cac0f7ae118142a0d8e2ff0594607e" target="_blank" style="color:var(--vd-accent);">Asana System Guide on Notion</a></div>
+
+    <div class="tree">
+      <div class="l0">Sweatband Operations &mdash; <a href="https://app.asana.com/0/1213734999759358" target="_blank" style="color:var(--vd-accent); text-decoration:none; font-family:'Inter',sans-serif; font-size:0.7rem;">Open in Asana &#8599;</a></div>
+      <div class="l1">&#9889; Daily Checks</div>
+      <div class="l1d">6 tasks each morning. Spend pacing, anomalies, notifications, disapprovals, Meta delivery, policy.</div>
+      <div class="l1">&#128197; Weekly Optimisations</div>
+      <div class="l1d">19 tasks every Monday. Search terms, QS, impression share, tROAS, cannibalisation, budget, RSAs, client comms.</div>
+      <div class="l1">&#128198; Monthly Reviews</div>
+      <div class="l1d">22 tasks on the 1st. Performance vs KPIs, MoM, structure audit, keywords, audiences, creative fatigue, GA4 cross-check.</div>
+      <div class="l1">&#128203; Change Log</div>
+      <div class="l1d">Auto-populated from Google Ads API. Every change logged with date, type, and campaign metadata.</div>
+      <div class="l1">&#128680; Alerts</div>
+      <div class="l1d">Auto-populated from Alert Hub sheet. Prioritised HIGH / MEDIUM / LOW. Check these first every morning.</div>
+    </div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem;">Section Overview</h3>
+    <table>
+      <thead><tr><th>Section</th><th>Purpose</th><th>Created by</th><th>When to check</th></tr></thead>
+      <tbody>
+        <tr><td>General Tasks</td><td>Ad-hoc work, one-offs</td><td>Manual</td><td>Daily</td></tr>
+        <tr><td style="color:var(--vd-amber);">&#9889; Daily Checks</td><td>5-10 min triage. Damage prevention</td><td>Auto 8am UTC</td><td>Every morning, first</td></tr>
+        <tr><td style="color:var(--vd-red);">&#128680; Alerts</td><td>Automated alerts from monitoring scripts</td><td>Auto from scripts</td><td>Every morning, before checks</td></tr>
+        <tr><td style="color:var(--vd-blue);">&#128197; Weekly Optimisations</td><td>Weekly optimisation checklist</td><td>Auto every Monday</td><td>During week, done by Friday</td></tr>
+        <tr><td style="color:var(--vd-purple);">&#128198; Monthly Reviews</td><td>Monthly deep-dive tasks</td><td>Auto on the 1st</td><td>Complete before month-end</td></tr>
+        <tr><td>&#128203; Change Log</td><td>Every account change, auto-logged from API</td><td>Auto daily</td><td>Review mornings for surprises</td></tr>
+        <tr><td>&#128222; Call Log</td><td>Client calls, auto-logged from Fathom</td><td>Auto from Fathom</td><td>After every call</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem;">Alert Severity &amp; Response</h3>
+    <table>
+      <thead><tr><th>Level</th><th>Meaning</th><th>Response</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--vd-red); font-weight:700;">HIGH</td><td>Action required today</td><td style="color:var(--vd-red);">Same day, no exceptions</td></tr>
+        <tr><td style="color:var(--vd-amber); font-weight:700;">MEDIUM</td><td>Review needed</td><td>Within 48 hours</td></tr>
+        <tr><td style="color:var(--vd-green); font-weight:700;">LOW</td><td>Informational</td><td>At your discretion</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem;">Monitoring Scripts</h3>
+    <table>
+      <thead><tr><th>Script</th><th>Monitors</th><th>Thresholds</th></tr></thead>
+      <tbody>
+        <tr><td>spend-anomaly-monitor</td><td>Today's spend vs 7-day avg</td><td>&gt;40% above = spike, &gt;50% below = drop</td></tr>
+        <tr><td>conversion-health-monitor</td><td>Zero/dropping conversions</td><td>0 convs over 3 days with &gt;$50 spend</td></tr>
+        <tr><td>disapproval-scanner</td><td>Disapproved ads/assets</td><td>Any disapproved = HIGH</td></tr>
+        <tr><td>bid-strategy-monitor</td><td>Bid strategy health</td><td>Learning/Limited/Misconfigured. &gt;30% off target</td></tr>
+        <tr><td>budget-pacing-monitor</td><td>Monthly budget pace</td><td>Overspend &gt;10% or underspend &gt;20%</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem;">Rules</h3>
+    <div class="config-block">
+      <span class="val">1.</span> <span class="key">Daily Checks before optimisation.</span> Always.<br>
+      <span class="val">2.</span> <span class="key">Log every change.</span> If you changed it, Change Log within 24 hours.<br>
+      <span class="val">3.</span> <span class="key">HIGH alerts = same day action.</span> No exceptions.<br>
+      <span class="val">4.</span> <span class="key">Concerned/At Risk sentiment?</span> Tell David immediately.<br>
+      <span class="val">5.</span> <span class="key">Come back after 7 days</span> and fill in the Result field on Change Log entries.<br>
+      <span class="val">6.</span> <span class="key">Don't create tasks in Alerts.</span> Automated only.
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  KNOWLEDGE                                                     -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ===== GOOGLE ADS LIBRARY ===== -->
+  <section class="sec" id="gads-library">
+    <div class="sec-label">Knowledge</div>
+    <div class="sec-title">Google Ads Systems Library</div>
+    <div class="sec-desc">Our entire Google Ads knowledge base on Notion. SOPs, guides, and checklists for every topic. <a href="https://www.notion.so/328ac0f7ae11800e98eec3a17af2b449" target="_blank" style="color:var(--vd-accent);">Open full library</a></div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;">Interactive Checklists</h3>
+    <div class="cg cg3">
+      <div class="cd">
+        <h3>Daily Triage</h3>
+        <p>5-10 min damage prevention. Catch breakage before it causes damage.</p>
+        <span class="badge b-daily">Daily</span><br>
+        <a class="cl" href="https://www.notion.so/32cac0f7ae1180ffb450e3f0b4eaf6b9" target="_blank">Open Checklist &#8599;</a>
+      </div>
+      <div class="cd">
+        <h3>Optimisation Checklist</h3>
+        <p>Systematic performance improvement. New clients: daily. Mature: twice weekly. Min: weekly.</p>
+        <span class="badge b-cron">Weekly min</span><br>
+        <a class="cl" href="https://www.notion.so/32cac0f7ae11809d942ac11f95c2e9a0" target="_blank">Open Checklist &#8599;</a>
+      </div>
+      <div class="cd">
+        <h3>Settings/Accuracy Audit</h3>
+        <p>Catch settings drift and configuration issues. Run monthly or when someone new has access.</p>
+        <span class="badge b-python">Monthly</span><br>
+        <a class="cl" href="https://www.notion.so/32cac0f7ae1180e4943ffac94367e2f1" target="_blank">Open Checklist &#8599;</a>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.85rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.75rem;">SOPs &amp; Guides by Topic</h3>
+
+    <div class="cg">
+      <div class="cd">
+        <h3>Account &amp; Settings</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/329ac0f7ae118075a85afc1a5cc1281c" target="_blank" style="margin:0;">Account Structure Principles &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/329ac0f7ae11807996a8f202bbcee1c3" target="_blank" style="margin:0;">Universal Campaign Settings &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/328ac0f7ae11800e98eec3a17af2b449" target="_blank" style="margin:0;">Naming Conventions &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae1180d4869cdb528da584b1" target="_blank" style="margin:0;">Asset Optimization Settings &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/329ac0f7ae11801b98cfc65c46d99ec4" target="_blank" style="margin:0;">Content Exclusions &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/329ac0f7ae118008be35ca9b02e18993" target="_blank" style="margin:0;">Brand Separation &#8599;</a>
+        </p>
+      </div>
+      <div class="cd">
+        <h3>Bidding</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/32aac0f7ae118095b7abe2cba61c842e" target="_blank" style="margin:0;">How Smart Bidding Works &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae1180d1b572fc0c3f39dafb" target="_blank" style="margin:0;">Select a Bid Strategy SOP &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae118036af64ed475bdea85f" target="_blank" style="margin:0;">Setting Up tROAS Bidding &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae1180199760e714dc917188" target="_blank" style="margin:0;">Manual to Smart Bidding SOP &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae118064bfddf6cf59fdb286" target="_blank" style="margin:0;">Conversion Volume Thresholds &#8599;</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="cg" style="margin-top:0.85rem;">
+      <div class="cd">
+        <h3>Quality Score</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/32aac0f7ae1180d29bf4faf54a95d587" target="_blank" style="margin:0;">How Quality Score Works &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae1180b58790cf85acd77276" target="_blank" style="margin:0;">SOP — Improve Ad Relevance &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae1180bc8055c2c6a6a2b072" target="_blank" style="margin:0;">SOP — Improve Expected CTR &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae11809eacf8fc132b55e7a0" target="_blank" style="margin:0;">SOP — Improve Landing Page Exp &#8599;</a>
+        </p>
+      </div>
+      <div class="cd">
+        <h3>Keywords</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/32aac0f7ae1180d587b9e329abcbfdff" target="_blank" style="margin:0;">How Match Types Work &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae1180e6a7e6ced855c863eb" target="_blank" style="margin:0;">Negative Keywords &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32cac0f7ae1180b2933fc00a0ce91b16" target="_blank" style="margin:0;">Researching Keywords SOP &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32cac0f7ae1180f88109e0c19fd0e12a" target="_blank" style="margin:0;">Mapping &amp; Clustering SOP &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32cac0f7ae118099892afaab34c45b74" target="_blank" style="margin:0;">N-Gram Analysis &#8599;</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="cg" style="margin-top:0.85rem;">
+      <div class="cd">
+        <h3>Ad Copy</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/329ac0f7ae11804f9e11d6e786f46e78" target="_blank" style="margin:0;">Awareness Level Copywriting &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae11807a8a98c041bd97a4c6" target="_blank" style="margin:0;">Headline Writing Angles &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae11801987befa67bc6e5a6b" target="_blank" style="margin:0;">Description Writing &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae11804f8e02d849eb6e1690" target="_blank" style="margin:0;">Ad Extensions &#8599;</a>
+        </p>
+      </div>
+      <div class="cd">
+        <h3>Shopping &amp; Product Feed</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/329ac0f7ae1180dba656c852e9454cc9" target="_blank" style="margin:0;">Shopping Campaign Structure &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae1180c5ab3affa834d01c5b" target="_blank" style="margin:0;">Product Feed Segmentation &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32eac0f7ae1181bc96f4f9a647ec0d98" target="_blank" style="margin:0;">Shopping Promotions SOP &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32eac0f7ae1181958509c877250a9741" target="_blank" style="margin:0;">Strikethrough Pricing SOP &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae118033b8f2deb16cbbf246" target="_blank" style="margin:0;">Product Titles &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae1180a3ac9bddf9246ea7ea" target="_blank" style="margin:0;">Product Descriptions &#8599;</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="cg" style="margin-top:0.85rem;">
+      <div class="cd">
+        <h3>PMax</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/329ac0f7ae1180d3ae96cdd7e1725f3f" target="_blank" style="margin:0;">PMax Structure &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae11802e9248f53c9e8b2c52" target="_blank" style="margin:0;">Asset Group Structure &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae11806b8a40ed437b46a509" target="_blank" style="margin:0;">PMax Configuration &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32bac0f7ae11803b9996e1ea062a927b" target="_blank" style="margin:0;">Audience Signals (PMax) &#8599;</a>
+        </p>
+      </div>
+      <div class="cd">
+        <h3>Landing Pages &amp; Optimisations</h3>
+        <p style="line-height:2;">
+          <a class="cl" href="https://www.notion.so/329ac0f7ae11804d8b88fdfaa3436d11" target="_blank" style="margin:0;">Building LPs to Convert &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/329ac0f7ae11809a90f6cb4a90df1769" target="_blank" style="margin:0;">LP Sections Breakdown &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32cac0f7ae1180559c66dc8cd845e0f9" target="_blank" style="margin:0;">Investigate Performance Anomalies &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae11801881cff27586f2abe9" target="_blank" style="margin:0;">Root Cause Analysis &#8599;</a><br>
+          <a class="cl" href="https://www.notion.so/32aac0f7ae1180cf8828c6342a3748ea" target="_blank" style="margin:0;">Running Experiments &#8599;</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ALL LINKS ===== -->
+  <section class="sec" id="all-links">
+    <div class="sec-label">Knowledge</div>
+    <div class="sec-title">All Links</div>
+
+    <table>
+      <thead><tr><th>Resource</th><th>Type</th><th>Link</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Google Ads Account</td>
+          <td>Google Ads</td>
+          <td><a href="https://ads.google.com/aw/overview?ocid=7666438476" target="_blank">Open Account &#8599;</a></td>
+        </tr>
+        <tr>
+          <td>Shopify Admin</td>
+          <td>Shopify</td>
+          <td><a href="https://sweatbanddevclean.myshopify.com/admin" target="_blank">Open Admin &#8599;</a></td>
+        </tr>
+        <tr>
+          <td>Asana Project</td>
+          <td>Asana</td>
+          <td><a href="https://app.asana.com/0/1213734999759358" target="_blank">Open Project &#8599;</a></td>
+        </tr>
+        <tr>
+          <td>Alert Hub Sheet</td>
+          <td>Google Sheets</td>
+          <td><a href="https://docs.google.com/spreadsheets/d/1Y01XZ_YG7IHSdNDV-nB10OM5mfhdkWkxDGBNoiXgg20" target="_blank">Open Sheet &#8599;</a></td>
+        </tr>
+        <tr>
+          <td>Daily Data Pull Sheet</td>
+          <td>Google Sheets</td>
+          <td><a href="https://docs.google.com/spreadsheets/d/1Honeneyh09gu_G20kDkDyogWk16QmOq4JQTLOXzceaI" target="_blank">Open Sheet &#8599;</a></td>
+        </tr>
+        <tr>
+          <td>GitHub Automation</td>
+          <td>GitHub</td>
+          <td><a href="https://github.com/your-org/vulcan-ads-automation" target="_blank">Open Repo &#8599;</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== CONTEXT FILES ===== -->
+  <section class="sec" id="context-files">
+    <div class="sec-label">Knowledge</div>
+    <div class="sec-title">Context Files Map</div>
+    <div class="sec-desc">Key files in the Sweatband client directory that inform analysis and automation.</div>
+
+    <table>
+      <thead><tr><th>File</th><th>What It Contains</th></tr></thead>
+      <tbody>
+        <tr><td>context/business.md</td><td>Targets, KPIs, budget allocation, campaign priorities, constraints</td></tr>
+        <tr><td>config/ads-context.config.json</td><td>Google Ads IDs, conversion actions, search term analysis config, n-gram config</td></tr>
+        <tr><td>context/google-ads/data/keywords.csv</td><td>Keywords with Quality Score breakdown</td></tr>
+        <tr><td>context/google-ads/data/search-terms.csv</td><td>Search terms (high volume + converting)</td></tr>
+        <tr><td>context/google-ads/data/ads.csv</td><td>RSA headlines and descriptions</td></tr>
+        <tr><td>context/google-ads/data/campaigns.csv</td><td>Campaign performance data</td></tr>
+        <tr><td>context/google-ads/data/shopping-performance.csv</td><td>Shopping product performance</td></tr>
+        <tr><td>context/google-ads/data/shopping-products.csv</td><td>Shopping feed status</td></tr>
+        <tr><td>context/google-ads/data/negative-keywords-*.csv</td><td>Negative keyword lists (campaign, ad group, shared)</td></tr>
+        <tr><td>context/competitor-ads/*.csv</td><td>Competitor ad copy from DataForSEO</td></tr>
+        <tr><td>context/offer-angles.md</td><td>Offer message angles for RSA composition</td></tr>
+        <tr><td>context/account-changelog.md</td><td>Recent Google Ads account changes</td></tr>
+        <tr><td>context/memory/YYYY-MM-DD.md</td><td>Daily workspace memory logs</td></tr>
+        <tr><td>created/rsas/*.csv</td><td>Generated RSAs ready for import</td></tr>
+        <tr><td>created/landing-pages/*.html</td><td>Landing page wireframes</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== KNOWN CONSTRAINTS ===== -->
+  <section class="sec" id="constraints" style="margin-bottom:2rem;">
+    <div class="sec-label">Knowledge</div>
+    <div class="sec-title">Known Constraints</div>
+    <div class="config-block">
+      <span class="key">Landing pages:</span> <span class="val">Cannot change without dev support (2-week lead time)</span><br>
+      <span class="key">Weekends:</span> <span class="val">No weekend budget adjustments (automated rules handle this)</span><br>
+      <span class="key">Conversion lag:</span> <span class="val" style="color:var(--vd-amber);">18 days &mdash; never judge performance on data younger than this</span><br>
+      <span class="key">Negative match type:</span> <span class="val">Always use Broad match for negatives</span><br>
+      <span class="key">Branded campaign:</span> <span class="val">"VD | Branded Search" &mdash; excluded from search term analysis</span>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<script>
+// Init on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.sec, .hero');
+    const links = document.querySelectorAll('.sidebar a[href^="#"]');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                links.forEach(l => l.classList.remove('active'));
+                const active = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => { if (s.id) observer.observe(s); });
+});
+</script>
+
+</body>
+</html>
